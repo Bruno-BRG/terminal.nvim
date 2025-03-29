@@ -1,15 +1,21 @@
 # terminal.nvim
 
-A minimal floating terminal plugin for Neovim that automatically detects and opens in your project root directory. Perfect for users who want a clean, distraction-free terminal experience within their editor.
+A cross-platform floating terminal plugin for Neovim that automatically detects and opens in your project root directory. Perfect for users who want a clean, distraction-free terminal experience within their editor.
 
 ## ✨ Features
 
 - 🪟 Floating terminal window with customizable dimensions
 - 📁 Smart project root detection based on common project markers
+- 🌍 Cross-platform support (Windows, Linux, macOS, and WSL)
+- 🔄 Intelligent shell detection:
+  - Windows: PowerShell (preferred) or cmd.exe
+  - Unix: Uses default shell or falls back to bash
+  - WSL: Proper WSL environment support
 - 🎨 Clean and minimal UI with rounded borders
 - ⚡ Zero dependencies - just pure Neovim
 - 🔧 Fully configurable through setup options
-- 🔍 Automatically opens in the detected project root directory
+- 🎯 Automatic project root directory detection
+- 🎨 Proper terminal colors and UI integration
 
 ## 📦 Installation
 
@@ -19,7 +25,7 @@ A minimal floating terminal plugin for Neovim that automatically detects and ope
 {
     'Bruno-BRG/terminal.nvim',
     config = function()
-        require('terminal').setup({
+        require('Terminal').setup({
             -- Your custom config here (optional)
         })
     end,
@@ -32,7 +38,7 @@ A minimal floating terminal plugin for Neovim that automatically detects and ope
 use {
     'Bruno-BRG/terminal.nvim',
     config = function()
-        require('terminal').setup()
+        require('Terminal').setup()
     end
 }
 ```
@@ -43,25 +49,26 @@ use {
 Plug 'Bruno-BRG/terminal.nvim'
 ```
 
-## ⚡ Quick Start
-
-1. Install the plugin using your preferred package manager
-2. Add basic configuration to your `init.lua`:
-
+After installation, add to your init.vim/init.lua:
 ```lua
-require('terminal').setup()
-
--- Recommended keymaps
-vim.keymap.set('n', '<leader>tt', '<cmd>Terminal<cr>', { desc = 'Open floating terminal' })
-vim.keymap.set('t', '<Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' })
+require('Terminal').setup()
 ```
+
+## ⚡ Default Keymaps
+
+The plugin comes with these default keymaps:
+
+- `<leader>t`: Open floating terminal
+- `<Esc><Esc>`: Exit terminal mode (while in terminal)
+
+These keymaps are set up automatically when you call `setup()`.
 
 ## ⚙️ Configuration
 
 Here's the default configuration with all available options:
 
 ```lua
-require('terminal').setup({
+require('Terminal').setup({
     -- Window dimensions (as percentage of editor size)
     width = 0.8,
     height = 0.7,
@@ -70,33 +77,69 @@ require('terminal').setup({
     border = 'rounded', -- none, single, double, rounded, solid, shadow
     style = 'minimal',  -- minimal, default
     
-    -- Project root detection markers
+    -- Project root detection markers (in order of priority)
     root_markers = {
         '.git',
+        '.svn',
+        '.hg',
         'Makefile',
-        'pyproject.toml',
         'package.json',
         'go.mod',
+        'cargo.toml',
+        'mix.exs',
         'pom.xml',
+        'composer.json',
+        '.projectile',
+        '.project'
     },
 })
 ```
 
-## 🔍 Root Directory Detection
+## 🔍 Project Root Detection
 
-The plugin automatically detects your project's root directory by looking for common project markers. If no markers are found, it falls back to the current working directory.
+The plugin intelligently detects your project's root directory by looking for common project markers in the following order:
 
-Supported markers:
-- `.git` directory
-- `Makefile`
-- `pyproject.toml`
-- `package.json`
-- `go.mod`
-- `pom.xml`
+1. Version Control Systems:
+   - `.git` directory
+   - `.svn` directory
+   - `.hg` directory (Mercurial)
+
+2. Build System & Package Managers:
+   - `Makefile`
+   - `package.json` (Node.js)
+   - `go.mod` (Go)
+   - `cargo.toml` (Rust)
+   - `mix.exs` (Elixir)
+   - `pom.xml` (Maven)
+   - `composer.json` (PHP)
+
+3. Project Files:
+   - `.projectile` (Emacs projectile)
+   - `.project` (Eclipse)
+
+If no markers are found, it falls back to the current working directory.
+
+## 🖥️ Platform-Specific Features
+
+### Windows
+- Prioritizes PowerShell Core (pwsh) if available
+- Falls back to Windows PowerShell if PowerShell Core isn't available
+- Uses cmd.exe as last resort
+- Proper handling of drive letter changes with `cd /d`
+
+### Unix-like Systems (Linux/macOS)
+- Uses the user's default shell ($SHELL)
+- Falls back to /bin/bash if $SHELL is not set
+- Proper handling of login shell initialization
+
+### WSL (Windows Subsystem for Linux)
+- Detects WSL environment automatically
+- Uses appropriate WSL shell with proper environment setup
+- Maintains WSL-specific environment variables
 
 ## 🤝 Contributing
 
-Contributions are welcome! Feel free to:
+Contributions are welcome! Here's how you can help:
 
 1. Fork the repository
 2. Create your feature branch (`git checkout -b feature/amazing-feature`)
@@ -114,4 +157,15 @@ Created and maintained by [Bruno-BRG](https://github.com/Bruno-BRG).
 
 ## 📣 Feedback and Issues
 
-If you encounter any problems or have suggestions, please [open an issue](https://github.com/Bruno-BRG/terminal.nvim/issues) on GitHub.
+If you encounter any problems or have suggestions:
+1. Check the [Issues](https://github.com/Bruno-BRG/terminal.nvim/issues) page first
+2. If your issue isn't already reported, [open a new issue](https://github.com/Bruno-BRG/terminal.nvim/issues/new)
+
+## 🔄 Updates & Changelog
+
+### Latest Updates
+- Added comprehensive cross-platform support
+- Improved project root detection with more markers
+- Enhanced shell detection and initialization
+- Added proper WSL support
+- Improved terminal UI and color handling
